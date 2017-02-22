@@ -1,0 +1,4 @@
+PercentCpuTime: {description: '% CPU', unit: PERCENT}
+PercentSystemTime: {description: '% System', unit: PERCENT}
+PercentUserTime: {description: '% User', unit: PERCENT}
+PercentIdleCpuTime: 100*NumberCore-PercentCpuTime

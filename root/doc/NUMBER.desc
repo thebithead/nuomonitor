@@ -1,0 +1,31 @@
+ActualVersion: {description: Act Vers, unit: NUMBER}
+EffectiveVersion: {description: Eff Vers, unit: NUMBER}
+NodeId: {description: Node, unit: NUMBER}
+ProcessId: {description: PID, unit: NUMBER}
+
+CurrentActiveTransactions: {description: Active Trans, unit: NUMBER}
+CurrentCommittedTransactions: {description: Comm Trans, unit: NUMBER}
+CurrentPurgedTransactions: {description: Purged Trans, unit: NUMBER}
+OldestActiveTransaction: {description: Oldest Active, unit: NUMBER}
+OldestCommittedTransaction: {description: Oldest Committed, unit: NUMBER}
+
+# heap
+HeapActive: {description: Total charge of allocator, unit: NUMBER}
+HeapAllocated: {description: Bytes allocated, unit: NUMBER}
+HeapMapped: {description: Allocator reserve size, unit: NUMBER}
+Memory: {description: Memory, unit: NUMBER}
+
+ClientCncts: {description: Client Cncts, unit: NUMBER}
+DependentCommitWaits: {description: Number of commits waiting for dependencies to become visible first, unit: NUMBER}
+NumberCores: {description: Cores, unit: NUMBER}
+ObjectFootprint: {description: Estimated memory per object, unit: NUMBER}
+
+SendQueueSize: {description: Size of all unsorted message sequencer queues, unit: NUMBER}
+SendSortingQueueSize: {description: Size of all sorted message sequencer queues, unit: NUMBER}
+SocketBufferBytes: {description: Size of all socket send buffers, unit: NUMBER}
+
+SnapshotAlbumSize: {description: Number of snapshots in a snapshot album, unit: NUMBER}
+SnapshotAlbumTime: {description: Time a snapshot album was open, unit: NUMBER}
+
+WriteLoadLevel: {description: Objects per second over maximum sustainable rate, unit: NUMBER}
+WriteThrottleSetting: {description: Microseconds throttle time per write, unit: NUMBER}

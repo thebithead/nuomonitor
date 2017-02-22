@@ -1,0 +1,5 @@
+{
+  "uri" : "http://$(hostname):8001/test/me",
+  "format" : "influxdb",
+  "mode" : "changed"
+}

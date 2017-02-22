@@ -1,0 +1,54 @@
+Commits: {description: Commits, unit: DELTA}
+Rollbacks: {description: Rollbacks, unit: DELTA}
+
+Deletes: {description: Deletes, unit: DELTA}
+Inserts: {description: Inserts, unit: DELTA}
+Updates: {description: Updates, unit: DELTA}
+
+-- object stuff
+
+ObjectsBounced: {description: Objs Bounced, unit: DELTA}
+ObjectsCreated: {description: Objs Created, unit: DELTA}
+ObjectsDeleted: {description: Objs Deleted, unit: DELTA}
+ObjectsDropped: {description: Objs Dropped, unit: DELTA}
+ObjectsDroppedPurged: {description: Purged Objs Dropped, unit: DELTA}
+ObjectsExported: {description: Objs Exported, unit: DELTA}
+ObjectsImported: {description: Objs Imported, unit: DELTA}
+ObjectsLoaded: {description: Objs Loaded, unit: DELTA}
+ObjectsPurged: {description: Objs Purged, unit: DELTA}
+ObjectsReloaded: {description: Objs Reloaded, unit: DELTA}
+ObjectsRequested: {description: Objs Requested, unit: DELTA}
+ObjectsSaved: {description: Objs Saved, unit: DELTA}
+
+-- messaging
+
+AdminReceived: {description: Admin Recvd, unit: DELTA}
+AdminSent: {description: Admin Sent, unit: DELTA}
+ClientReceived: {description: Client Recvd, unit: DELTA}
+ClientSent: {description: Client Sent, unit: DELTA}
+MessagesReceived: {description: Msg Recvd, unit: DELTA}
+MessagesSent: {description: Msg Sent, unit: DELTA}
+PacketsReceived: {description: Pckt Recvd, unit: DELTA}
+PacketsSent: {description: Pckets Sent, unit: DELTA}
+ServerReceived: {description: Srvr Recvd, unit: DELTA}
+ServerSent: {description: Srvr Sent, unit: DELTA}
+
+BytesBuffered: {description: Bytes Buffered, unit: DELTA}
+BytesReceived: {description: Bytes Recvd, unit: DELTA}
+BytesSent: {description: Bytes Sent, unit: DELTA}
+
+
+IdManagerBlockingStallCount: {description: Id Manager Blocking Stalls, unit: DELTA}
+IdManagerNonBlockingStallCount: {description: Id Manager Non Blocking Stalls, unit: DELTA}
+PendingUpdateStallCount: {description: Pending Update Stalls, unit: DELTA}
+PlatformCatalogStallCount: {description: Platform Catalog Sync Fingerprints Stalls, unit: DELTA}
+Stalls: {description: Stalls, unit: DELTA}
+
+ArchiveBufferedBytes: {description: Archive Buffered Bytes, unit: DELTA}
+CheckCompleteFull: {description: Number of times we did a full check complete, unit: DELTA}
+CheckCompleteOptimized: {description: Number of times we were able to make use of an optimized check complete, unit: DELTA}
+
+NumSplits: {description: Index splits performed, unit: DELTA}
+SnapshotAlbumsClosed: {description: Number of snapshot albums closed, unit: DELTA}
+SnapshotAlbumsClosedForGC: {description: Number of snapshot albums closed to allow expunging of old record versions, unit: DELTA}
+SqlMsgs: {description: SQL Msgs, unit: DELTA}

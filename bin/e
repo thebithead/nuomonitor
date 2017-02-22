@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# simple interface to nuomonitor
+# - add a event publisher         - ./e post <file>  { see test directory for examples }
+# - delete an event publisher     - ./e del <id>
+# - get list of event publishes   - ./e get
+# - get latest metrics values     - ./e get latest
+# - get description of metrics    - ./e get description
+# - get status of event publisher - ./e get <id>
+
+: ${LOCALHOST:="$(python -c 'import socket; print socket.gethostbyname(socket.getfqdn())')"}
+: ${NUOMONITOR:="${LOCALHOST}:80"}
+: ${INFLUX:="${LOCALHOST}"}
+
+function jsonpp () {
+    python -m json.tool
+}
+
+
+function get() {
+  if [ $# -eq 0 ]; then
+    curl -silent -X GET http://${NUOMONITOR}/api/v1/metrics  | jsonpp
+  else
+    curl --silent -X GET http://${NUOMONITOR}/api/v1/metrics/"$@"  | jsonpp   
+  fi    
+}
+
+function post() {
+    local doc="$(sed "s/\$(hostname)/${INFLUX}/" $1)"
+    curl --silent -X POST -H "application/json" -d "$doc" http://${NUOMONITOR}/api/v1/metrics  | jsonpp
+}
+
+function del() {
+    curl --silent -X DELETE http://${NUOMONITOR}/api/v1/metrics/"$@" | jsonpp    
+}
+
+if [ $# -gt 0 ]; then
+    eval "$@"
+else
+    echo "usage: $0 [get|post|del]"
+fi

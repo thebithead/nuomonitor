@@ -1,0 +1,5 @@
+{
+  "uri" : "stomp://$(hostname)/queue/test",
+  "format" : "json",
+  "mode" : "changed"
+}

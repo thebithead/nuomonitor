@@ -1,0 +1,5 @@
+ArchiveDirectory: {description: Archive, unit: IDENTIFIER}
+Database: {description: Database Name, unit: IDENTIFIER}
+Hostname: {description: Host, unit: IDENTIFIER}
+NodeState: {description: State, unit: IDENTIFIER}
+NodeType: {description: Node Type, unit: IDENTIFIER}

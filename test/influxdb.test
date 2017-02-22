@@ -1,0 +1,5 @@
+{
+  "uri" : "http://$(hostname)/write?db=nuodb",
+  "format" : "influxdb",
+  "mode" : "full"
+}

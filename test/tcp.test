@@ -1,0 +1,5 @@
+{
+  "uri" : "tcp://$(hostname):1234",
+  "format" : "influxdb",
+  "mode" : "full"
+}

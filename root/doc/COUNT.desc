@@ -1,0 +1,9 @@
+ArchiveQueue: {description: Arch Queue, unit: COUNT}
+DiskWritten: {description: Dsk Writes, unit: COUNT}
+JournalQueue: {description: Journal Queue, unit: COUNT}
+JrnlBytes: {description: Jrl Bytes, unit: COUNT}
+JrnlWrites: {description: Jrl Wrts, unit: COUNT}
+LogMsgs: {description: Log Msgs, unit: COUNT}
+Objects: {description: Objects, unit: COUNT}
+PageFaults: {description: Page Flts, unit: COUNT}
+PurgedObjects: {description: Purged Objects, unit: COUNT}

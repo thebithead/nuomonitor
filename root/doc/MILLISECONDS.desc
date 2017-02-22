@@ -1,0 +1,56 @@
+ActiveTime: {description: Time spent in all active threads, unit: MILLISECONDS}
+IdleTime: {description: Time when no threads were active, unit: MILLISECONDS}
+
+ArchiveBandwidthThrottleTime: {description: Time in archive I/O throttle, unit: MILLISECONDS}
+ArchiveDirectoryTime: {description: Time spent in archive directory operations, unit: MILLISECONDS}
+ArchiveFsyncTime: {description: Time spent finishing archive writes, unit: MILLISECONDS}
+ArchiveReadTime: {description: Time spent in archive read, unit: MILLISECONDS}
+ArchiveSyncThrottleTime: {description: Time in archive synchronization throttle, unit: MILLISECONDS}
+ArchiveWriteTime: {description: Time spent in archive write, unit: MILLISECONDS}
+JournalBandwidthThrottleTime: {description: Time in journal I/O throttle, unit: MILLISECONDS}
+JournalDirectoryTime: {description: Time spent in journal directory operations, unit: MILLISECONDS}
+JournalFsyncTime: {description: Time spent finishing journal writes, unit: MILLISECONDS}
+JournalWriteTime: {description: Time spent in journal write, unit: MILLISECONDS}
+
+Milliseconds: {description: Elapsed, unit: MILLISECONDS}
+UserMilliseconds: {description: User Mode, unit: MILLISECONDS}
+KernelMilliseconds: {description: System, unit: MILLISECONDS}
+
+SqlListenerIdleTime: {description: SQL Idle Time, unit: MILLISECONDS}
+SqlListenerSqlProcTime: {description: SQL Processing Time, unit: MILLISECONDS}
+SqlListenerStallTime: {description: SQL Stall Time, unit: MILLISECONDS}
+SqlListenerThrottleTime: {description: SQL Throttle Time, unit: MILLISECONDS}
+
+PendingEventsCommitTime: {description: Time waiting for commit event processing, unit: MILLISECONDS}
+PendingInsertWaitTime: {description: Pending Insert Wait Time, unit: MILLISECONDS}
+PendingUpdateWaitTime: {description: Pending Update Wait Time, unit: MILLISECONDS}
+
+PlatformObjectCheckCompleteTime: {description: Platform Object Check Complete Time, unit: MILLISECONDS}
+PlatformObjectCheckOpenTime: {description: Platform Object Check Open Time, unit: MILLISECONDS}
+PlatformObjectCheckPopulatedTime: {description: Platform Object Check Populated Time, unit: MILLISECONDS}
+
+TransactionBlockedTime: {description: Transaction Blocked Time, unit: MILLISECONDS}
+
+
+AtomProcessingThreadBacklog: {description: Time waiting to allocate an atom processing thread, unit: MILLISECONDS}
+BroadcastTime: {description: Time spent in broadcasting messages, unit: MILLISECONDS}
+ClientThreadBacklog: {description: Time waiting to allocate a client thread, unit: MILLISECONDS}
+CreatePlatformRecordsTime: {description: Time waiting for creation of Records atom, unit: MILLISECONDS}
+HTTPProcessingThreadBacklog: {description: Time waiting to allocate an HTTP storage thread, unit: MILLISECONDS}
+LoadObjectTime: {description: Time spent loading objects from archive, unit: MILLISECONDS}
+LocalCommitOrderTime: {description: Time spent putting local commit in order, unit: MILLISECONDS}
+MemoryThrottleTime: {description: Time in heap memory throttle, unit: MILLISECONDS}
+MessageSequencerMergeTime: {description: Time spent in merging queue with unsent messages, unit: MILLISECONDS}
+MessageSequencerSortTime: {description: Time spent in sorting queue, unit: MILLISECONDS}
+NodeApplyPingTime: {description: Node Apply Ping Time, unit: MILLISECONDS}
+NodePingTime: {description: Node Ping Time, unit: MILLISECONDS}
+NodePostMethodTime: {description: Node Post Time, unit: MILLISECONDS}
+NodeSocketBufferWriteTime: {description: Time spent in writing in inter-node socket writes, unit: MILLISECONDS}
+NonChairSplitTime: {description: Non-chair split time, unit: MILLISECONDS}
+PruneAtomsThrottleTime: {description: Time pruning throttled for sake of SM, unit: MILLISECONDS}
+RefactorTXQueueTime: {description: Time spent managing tx queue, unit: MILLISECONDS}
+RemoteCommitTime: {description: Time spent waiting for remote commit to finish, unit: MILLISECONDS}
+StallPointWaitTime: {description: Stall Point Wait Time, unit: MILLISECONDS}
+SyncPointWaitTime: {description: Sync Point Wait Time, unit: MILLISECONDS}
+WaitForSplitTime: {description: Index insert wait for split time, unit: MILLISECONDS}
+WriteThrottleTime: {description: Time writes waiting to let SM catch up, unit: MILLISECONDS}
