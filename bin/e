@@ -10,7 +10,7 @@
 
 : ${LOCALHOST:="$(python -c 'import socket; print socket.gethostbyname(socket.getfqdn())')"}
 : ${NUOMONITOR:="${LOCALHOST}:80"}
-: ${INFLUX:="${LOCALHOST}"}
+: ${INFLUX:="influxdb:8086"}
 
 function jsonpp () {
     python -m json.tool
