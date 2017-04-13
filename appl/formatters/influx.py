@@ -199,11 +199,11 @@ def summary(values):
 
     def v(raw):
         rvalues = "raw=%d" % (raw)
-        multiplier = (deltaTime-idleTime)*1./deltaTime
-        if activeTime > 0:
-            rvalues += ",percent=%d" % (int(round(multiplier*raw*100./activeTime)))
         if deltaTime > 0:
             rvalues += ",nthreads=%d" % (int(round(raw/deltaTime)))
+            if activeTime > 0:
+                multiplier = (deltaTime-idleTime)*1./deltaTime
+                rvalues += ",percent=%d" % (int(round(multiplier*raw*100./activeTime)))
         return rvalues
 
     cpuTime   = get("UserMilliseconds") + get("KernelMilliseconds")
@@ -259,8 +259,15 @@ class InfluxFormatter(Formatter):
 
         with closing(cStringIO.StringIO()) as buffer:
             for k in values:
-                rvalues = mapper[k](k,values) if k in mapper else unknown(k,values)
-                print >> buffer,"%s,%s %s %s" % (k,tags,rvalues,timestamp)
+                if k in mapper:
+                    rvalues = mapper[k](k,values)
+                    print >> buffer,"%s,%s %s %s" % (k,tags,rvalues,timestamp)
+                elif k not in self.header:
+                    try:
+                        rvalues = "raw=%di" % (int(values[k]))
+                        print >> buffer,"%s,%s %s %s" % (k,tags,rvalues,timestamp)
+                    except:
+                        pass
             summary_map = summary(values)
             for key,rvalues in summary_map.iteritems():
                 print >> buffer,"%s,%s %s %s" % (key,tags,rvalues,timestamp)

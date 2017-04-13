@@ -37,4 +37,10 @@ A. I have had problems where I was unable to connect to an engine.  If
    All engines connected to ...
 
 
+You can do a batch load of monitor log file to influxdb via:
+
+# TZ environment variable should be same as the timezone that the file was created in
+# It would be easiest to have 'monitor domain' log timestamp as UTC.  To do this you'll need to invoke nuodbmanager.jar with -D user.timezone=UTC
+
+% docker run --env TZ=':EST5EDT' -it --network nw -v $(pwd):/data support.bo2.nuodb.com:5000/nuomonitor:latest batch /data/domain.log
 

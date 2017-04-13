@@ -2,7 +2,7 @@
 import os, sys, yaml
 import time,aenum
 import pynuodb,socket
-import threading, logging
+import threading, logging, traceback
 from util import *
 
 from pynuodb.session import Session, BaseListener, SessionMonitor
@@ -12,6 +12,8 @@ from xml.etree import ElementTree
 # base class, do not override methods
 
 __all__ = [ 'MetricsListener', 'EventListener', 'get_nuodb_metrics' ]
+
+running_monitors = {}
 
 class BaseMetricsListener(BaseListener):
     def __init__ (self):
@@ -56,7 +58,11 @@ class BaseMetricsListener(BaseListener):
             self.onChange(values)
 
     def closed(self):
+        global running_monitors
+        logging.info("closed process %s " % (self.process))
         self.onEnd()
+        if str(self.process) in running_monitors:
+            del runnig_monitors[str(self.process)]
         pass
 
 
@@ -131,7 +137,7 @@ class MetricsListener(BaseMetricsListener):
 class MetricsDomain(Domain):
     def __init__(self,broker,user,password,listener):
         Domain.__init__(self,broker,user,password,listener)
-        
+
     def wait_forever(self,log=False):
         try:
             while True:
@@ -142,35 +148,15 @@ class MetricsDomain(Domain):
             self.disconnect()
             if log:
                 print "disconnect..."
-        
-
-@print_exc
-def get_nuodb_metrics(broker, password, listener, user='domain', database=None, host=None, process=None, args=None, domain_listener=None):
-    #Listener is class derived from MetricsListener
-    if listener is None:
-        listener = MetricsListener
-    if domain_listener is None:
-        domain_listener = EventListener
-        
-    domain = __DomainListener(user=user,
-                              password=password,
-                              database=database,
-                              host=host,
-                              process=process,
-                              listener=listener,
-                              args=args,
-                              domain_listener=domain_listener())
-    return MetricsDomain(broker, user, password,domain)
 
 # implementation
 """ TODO:  Add event stream """
 
-class __DomainListener(object):
+class DomainListener(object):
     def __init__(self,**kwds):
         for k,v in kwds.iteritems():
             setattr(self,k,v)
         self.cached_addresses = {}
-        self.running_monitors = {}
         self.listener = getattr(self,'listener',MetricsListener)
         self.domain_listener = getattr(self,'domain_listener',EventListener())
         
@@ -180,6 +166,8 @@ class __DomainListener(object):
 
 
     def peer_joined(self, peer):
+        logging.info("peer joined: %s" % str(peer))
+
         # apply filters if specified
         if not self.__monitoring_peer(peer):
             return
@@ -194,6 +182,8 @@ class __DomainListener(object):
                                      id, None)
 
     def peer_left(self, peer):
+        logging.info("peer left: %s" % str(peer))
+
         # apply filters if specified
         if not self.__monitoring_peer(peer):
             return
@@ -208,7 +198,11 @@ class __DomainListener(object):
                                      id, None)
         
     def process_joined(self, p):
-        logging.debug("process joined: %s" % str(p))
+        global running_monitors
+        if str(p) in running_monitors:
+            return
+
+        logging.info("process joined: %s" % str(p))
         db = p.database
         # apply filters if specified
         if self.database and self.database != db.name:
@@ -224,6 +218,7 @@ class __DomainListener(object):
             return
         if self.process and self.host and self.process != p.pid:
             return
+
         
         # setup monitors
         id = dict ( hostname = p.hostname,
@@ -239,8 +234,9 @@ class __DomainListener(object):
         self.monitorEngine(p)
         
     def process_left(self, p):
-        logging.debug("process left: %s" % str(p))
-        if str(p) in self.running_monitors:
+        global running_monitors
+        if str(p) in running_monitors:
+            logging.info("process left: %s" % str(p))
             id = dict ( hostname = p.hostname,
                         dbname = p.database.name,
                         port = p.port,
@@ -251,11 +247,10 @@ class __DomainListener(object):
             self.domain_listener.onEvent(EventListener.EventType.LEFT,
                                          EventListener.EntityType.PROCESS,
                                          id, None)
-            monitor = self.running_monitors[str(p)]
-            del self.running_monitors[str(p)]
+            del running_monitors[str(p)]
 
     def process_failed(self, peer, reason):
-        print 'failed: ',peer
+        logging.info("process failed: %s - %s" % (str(peer),reason))
         id = dict( hostname=  peer.hostname,
                    address=   peer.address,
                    port=      peer.port,
@@ -268,6 +263,8 @@ class __DomainListener(object):
         pass
 
     def process_status_changed(self, p, status):
+        logging.info("process status change: %s - %s" % (str(p),status))
+
         id = dict ( hostname = p.hostname,
                     dbname = p.database.name,
                     port = p.port,
@@ -280,6 +277,8 @@ class __DomainListener(object):
                                      id, status)
 
     def database_joined(self, database):
+        logging.info("database joined: %s" % (str(database)))
+
         id = dict(database=database.name)
         self.domain_listener.onEvent(EventListener.EventType.JOINED,
                                      EventListener.EntityType.DATABASE,
@@ -287,6 +286,8 @@ class __DomainListener(object):
         pass
 
     def database_left(self, database):
+        logging.info("database left: %s" % (str(database)))
+
         id = dict(database=database.name)
         self.domain_listener.onEvent(EventListener.EventType.LEFT,
                                      EventListener.EntityType.DATABASE,
@@ -304,22 +305,24 @@ class __DomainListener(object):
     @print_exc
     def monitorEngine(self,process):
         """ Monitor statistics from a TE or SM """
+        global running_monitors
+        
+        process_id = str(process)
+        if process_id not in running_monitors:
+            # attach and monitor stats from engine
+            engine_key = self.__get_engine_key(process)
+            engine_session = Session(process.address,port=process.port,service="Monitor")
+            engine_session.authorize("Cloud",engine_key)
 
-        # attach and monitor stats from engine
-        engine_key = self.__get_engine_key(process)
-        engine_session = Session(process.address,port=process.port,service="Monitor")
-        engine_session.authorize("Cloud",engine_key)
-
-        args = getattr(self,'args',None)
-        if args is None:
             callbk = self.listener()
-        else:
-            callbk = self.listener().init(args)
-        callbk.process = process
-        monitor = SessionMonitor(engine_session, listener=callbk)
-        monitor.start()
-        engine_session.doConnect()
-        self.running_monitors[str(process)] = monitor
+            args = getattr(self,'args',None)
+            if args is not None:
+                callbk.init(args)
+            callbk.process = process
+            monitor = SessionMonitor(engine_session, listener=callbk)
+            monitor.start()
+            engine_session.doConnect()
+            running_monitors[process_id] = monitor
 
     @print_exc
     def getSyncTrace(self,process):
@@ -329,10 +332,16 @@ class __DomainListener(object):
         engine_session.authorize("Cloud",engine_key)
         
 
-    def closed(self):
-        for name,monitor in self.running_monitors.iteritems():
+    def stop_monitors(self):
+        global running_monitors
+        monitors = [ m for m in running_monitors.values() ]
+        for monitor in monitors:
             monitor.close()
-        self.running_monitors = {}
+
+    def closed(self):
+        if getattr(self,'onclose',None):
+            x = self.onclose
+            x()
 
     def __get_engine_key(self,process):
         session = Session(process.peer.connect_str, service="Manager")
@@ -344,8 +353,75 @@ class __DomainListener(object):
         return pwd
 
     def waitForTerminate(self):
-        while len(self.running_monitors):
-            threading.Thread.join(self.running_monitors.values()[0])
+        global running_monitors
+        while len(running_monitors):
+            threading.Thread.join(running_monitors.values()[0])
+
+@print_exc
+def get_nuodb_metrics(broker, password, listener, user='domain', database=None, host=None, process=None, args=None, domain_listener=None):
+        
+    class DomainObject(object):
+        INITIALIZING=0
+        STARTING=1
+        RUNNING=2
+        SHUTTING_DOWN=3
+
+        def __init__(self, broker, password, listener, user='domain', database=None, host=None, process=None, args=None, domain_listener=None):
+            #Listener is class derived from MetricsListener
+            self.broker = broker
+            self.user = user
+            self.password = password
+            self.state = DomainObject.INITIALIZING
+            
+            if listener is None:
+                listener = MetricsListener
+            if domain_listener is None:
+                domain_listener = EventListener
+            self.domain = DomainListener(user=self.user,
+                                         password=self.password,
+                                         database=database,
+                                         host=host,
+                                         process=process,
+                                         listener=listener,
+                                         args=args,
+                                         onclose=self.restart,
+                                         domain_listener=domain_listener())
+            self.start()
+
+        def run(self):
+            """Start in background once broker is running."""
+            self.mdomain = None
+            self.state = DomainObject.STARTING
+            while self.state == DomainObject.STARTING:
+                try:
+                    self.mdomain = MetricsDomain(self.broker, self.user, self.password, self.domain)
+                    self.state = DomainObject.RUNNING
+                except:
+                    logging.info("Exception enter domain via %s. Try again in 60 seconds..." % (self.broker))
+                    traceback.print_exc()
+                    time.sleep(60)
+                    
+
+        def start(self):
+            t = threading.Thread(name='monitor-start', target=self.run)
+            t.start()
+
+        def restart(self):
+            """Called when monitor session is closed."""
+            if self.state == DomainObject.RUNNING:
+                self.start()
+            pass
+                
+        def disconnect(self):
+            self.domain.stop_monitors()
+            self.domain = None
+            self.state = DomainObject.SHUTTING_DOWN
+            if self.mdomain:
+                self.mdomain.disconnect()
+            
+    return DomainObject(broker, password, listener, user, database, host, process, args, domain_listener)
+
+
 
 if __name__ == "__main__":
     import optparse
@@ -421,4 +497,3 @@ if __name__ == "__main__":
     del options.mode
     d=get_nuodb_metrics(broker=broker,listener=DemoListener,args=args,**options.__dict__)
     d.wait_forever()
-    

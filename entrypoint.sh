@@ -3,6 +3,9 @@ set -e
 
 if [ "${1:0:1}" = '-' ]; then
     set -- python nuomonitor.py "$@"
+elif [ "${1}" = "batch" ]; then
+    shift 
+    set -- python store-monitor.py "$@"
 fi
 
 if [ $# -eq 0 ]; then

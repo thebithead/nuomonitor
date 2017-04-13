@@ -1,3 +1,4 @@
+from consumer import MetricsConsumer,EventConsumer
 from broadcast import *
 import yaml
 from monitor import get_nuodb_metrics
