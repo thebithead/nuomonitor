@@ -18,7 +18,7 @@ counters = {}
 metrics = {}
 id = None
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO,format='%(asctime)s:%(levelname)s %(message)s')
 logging.getLogger("requests").setLevel(logging.WARNING)
 
 def formatTimestamp(tstamp):
