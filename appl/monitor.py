@@ -48,11 +48,13 @@ class BaseMetricsListener(BaseListener):
             for child in root:
                 items[child.attrib['name']] = self.__get_item(child.attrib)
             items['Database'] = dict(unit="IDENTIFIER", description="Database Name")
+            items['Region'] = dict(unit="IDENTIFIER", description="Region Name")
             self.onStart(items)
         elif root.tag == 'Status':
             values = dict( [ (k, parseStr(v)) for k,v in root.attrib.iteritems() ])
             if self.__first:
                 values['Database'] = self.process.database.name
+                values['Region'] = self.process.peer.get_tag('region')
                 self.__first=False
             values['TimeStamp'] = time.time()
             self.onChange(values)
@@ -344,7 +346,8 @@ class DomainListener(object):
             x()
 
     def __get_engine_key(self,process):
-        session = Session(process.peer.connect_str, service="Manager")
+        #session = Session(process.peer.connect_str, service="Manager")
+        session = Session(self.broker, service="Manager")
         session.authorize(self.user, self.password)
         pwd_response = session.doRequest(attributes={"Type": "GetDatabaseCredentials",
                                                      "Database": process.database.name})
@@ -378,6 +381,7 @@ def get_nuodb_metrics(broker, password, listener, user='domain', database=None, 
             if domain_listener is None:
                 domain_listener = EventListener
             self.domain = DomainListener(user=self.user,
+                                         broker=self.broker,
                                          password=self.password,
                                          database=database,
                                          host=host,

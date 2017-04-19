@@ -242,7 +242,7 @@ class InfluxFormatter(Formatter):
     def __init__(self,**kwds):
         super(InfluxFormatter,self).__init__(**kwds)
         
-    header = ["TimeStamp","NodeType","Hostname","ProcessId","NodeId","Database"]
+    header = ["TimeStamp","NodeType","Hostname","ProcessId","NodeId","Database","Region"]
 
     def onValues(self,descriptions,values):
         global mapper
@@ -254,8 +254,9 @@ class InfluxFormatter(Formatter):
         processid = values['ProcessId']
         nodeid    = values['NodeId']
         database  = values['Database']
+        region    = values['Region']
 
-        tags = "host=%s,nodetype=%s,pid=%s,nodeid=%s,db=%s" % (hostname,nodetype,processid,nodeid,database)
+        tags = "host=%s,nodetype=%s,pid=%s,nodeid=%s,db=%s,region=%s" % (hostname,nodetype,processid,nodeid,database,region)
 
         with closing(cStringIO.StringIO()) as buffer:
             for k in values:
@@ -295,12 +296,14 @@ if __name__ == '__main__':
                         NodeId=self.nodeid,
                         Hostname=self.hostname,
                         ProcessId=self.processid,
-                        NodeType=self.nodetype)
+                        NodeType=self.nodetype,
+                        Region=self.region)
     identity = Identity(database  = values['Database'],
                         nodeid    = values['NodeId'],
                         hostname  = values['Hostname'],
                         processid = values['ProcessId'],
-                        nodetype  = values['NodeType'])
+                        nodetype  = values['NodeType'],
+                        region    = values['Region'])
     
     influxf = InfluxFormatter()
     (ct,d) = influxf(identity,descriptions,values)
